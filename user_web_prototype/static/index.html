@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DXA Studio</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark"></span><strong>DXA Studio</strong></div>
+    <nav>
+      <div class="nav-label">Рабочая область</div>
+      <button class="nav-item active"><span>▣</span>Исследование</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-model-links">
+        <button class="nav-item" id="sideJobsBtn"><span>☷</span>Задания дообучения <b id="sideQueueCount">0</b></button>
+        <button class="nav-item sidebar-train" id="trainBtn"><span>↻</span>Запустить дообучение</button>
+      </div>
+      <div class="sidebar-settings-links">
+        <button class="nav-item" id="settingsBtn"><span>⚙</span>Настройки</button>
+        <button class="nav-item" id="helpBtn"><span>?</span>Помощь</button>
+      </div>
+      <div class="user-row"><span class="avatar" id="userAvatar">—<i></i></span><span><strong id="userName">Вход…</strong><small id="userRole">Локальный контур</small></span></div>
+    </div>
+  </aside>
+
+  <div class="main-shell">
+    <header class="contextbar">
+      <div><h1>Проверка результатов</h1></div>
+      <div class="autosave"><span>●</span> Все изменения сохранены</div>
+    </header>
+    <main class="workspace">
+      <div class="notice" id="notice"></div>
+      <section class="lanes" id="lanes"></section>
+    </main>
+  </div>
+</div>
+
+<input id="filesInput" type="file" multiple accept=".dcm,.dicom,.zip">
+
+<div class="modal" id="jobsModal"><div class="dialog">
+  <button class="icon-button modal-close" data-close="jobsModal">✕</button>
+  <h2>Задания дообучения</h2>
+  <p>Для запуска нужен хотя бы один исправленный снимок. Модельные предсказания добавляются автоматически и используются как необязательный второй набор. Новая версия не активируется автоматически.</p><div class="job-list" id="jobList"></div>
+</div></div>
+
+<div class="modal" id="settingsModal"><div class="dialog settings-dialog">
+  <button class="icon-button modal-close" data-close="settingsModal">✕</button>
+  <h2>Настройки</h2>
+  <div id="settingsContent"></div>
+</div></div>
+
+<div class="modal" id="helpModal"><div class="dialog help-dialog">
+  <button class="icon-button modal-close" data-close="helpModal">✕</button>
+  <h2>Как работать с DXA Studio</h2>
+  <ol class="help-steps">
+    <li><strong>Добавьте исследование.</strong><span>Нажмите на большую карточку и выберите один или несколько DICOM либо ZIP-архив. Папку с DICOM можно перетащить прямо на карточку.</span></li>
+    <li><strong>Дождитесь разметки.</strong><span>В верхнем уведомлении показаны текущий файл и прогресс. После завершения появится число корректно обработанных снимков.</span></li>
+    <li><strong>Проверьте результат.</strong><span>Модельная разметка нанесена на снимок. Если найдены нарушения, их список показан сразу под изображением.</span></li>
+    <li><strong>Сравните снимки.</strong><span>Используйте стрелки внутри карточки. Для параллельного просмотра добавьте другое исследование или снимок из уже загруженного.</span></li>
+    <li><strong>Скачайте результат.</strong><span>Выберите CSV или XLSX рядом с кнопкой «Скачать таблицу разметки».</span></li>
+    <li><strong>Исправьте разметку.</strong><span>Нажмите «Изменить разметку», выберите область и инструменты, затем отметьте ошибки изображения. Кнопка «Скорректировать модель» сохранит исправление и добавит его в очередь.</span></li>
+    <li><strong>Запустите дообучение.</strong><span>После хотя бы одной ручной корректировки нажмите «Запустить дообучение». Состояние процесса доступно в «Заданиях дообучения».</span></li>
+  </ol>
+  <div class="help-contact"><span>Нужна помощь?</span><a href="https://t.me/nsavkov" target="_blank" rel="noreferrer">Telegram · @nsavkov</a></div>
+</div></div>
+
+<div class="modal auth-modal" id="authModal"><div class="dialog auth-dialog">
+  <div class="auth-brand"><span class="brand-mark"></span><strong>DXA Studio</strong></div>
+  <h2 id="authTitle">Вход</h2>
+  <p id="authHint">Войдите в локальный аккаунт или продолжите как гость.</p>
+  <form id="authForm" class="auth-form">
+    <label>Логин<input id="authLogin" autocomplete="username" required></label>
+    <label>Пароль<input id="authPassword" type="password" autocomplete="current-password" required></label>
+    <div class="auth-error" id="authError"></div>
+    <button class="button primary" id="authSubmit" type="submit">Войти</button>
+  </form>
+  <div class="auth-separator"><span>или</span></div>
+  <button class="button guest-button" id="guestLoginBtn" type="button">Зайти как гость</button>
+  <small class="guest-note">Гостю доступен весь функционал приложения. Локальный аккаунт нужен только для персонального входа.</small>
+</div></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

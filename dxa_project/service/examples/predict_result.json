@@ -1,0 +1,22 @@
+{
+  "job_id": "example-predict-job",
+  "status": "completed",
+  "processed": 1,
+  "total": 1,
+  "errors": [],
+  "result_ids": [
+    "example-result"
+  ],
+  "table": [
+    {
+      "path_to_study": "example/scan.dcm",
+      "study_uid": "2.25.1000000000000000001",
+      "image_uid": "2.25.1000000000000000002",
+      "anatomical_region": "SPINE",
+      "quality_class": 1,
+      "violation_type": "spine_axis",
+      "processing_status": "Success",
+      "time_of_processing": 1.23
+    }
+  ]
+}

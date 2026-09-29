@@ -1,0 +1,38 @@
+
+# Медицинские данные
+/Исследования/
+/Размеченные/
+/Размеченные_*/
+/Для теста/
+
+*.dcm
+*.dicom
+
+# Экспертная разметка
+разметка.xlsx
+
+# Архивы
+*.rar
+*.zip
+
+# Локальные настройки
+.env
+.env.*
+!.env.example
+!.env.pilot.example
+!.env.augmented.example
+/dxa_project/service_data/
+/dxa_project/outputs/
+/user_web_prototype/prototype_data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+
+# Модели
+*.pt
+*.pth
