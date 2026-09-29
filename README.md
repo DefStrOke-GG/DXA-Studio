@@ -111,6 +111,18 @@ flowchart LR
 - Docker Desktop с Linux containers;
 - архив модели `backend_models_20260929.zip`.
 
+Сначала клонируйте **весь** репозиторий. Корень проекта — каталог, в котором одновременно находятся `README.md`, `dxa_project`, `user_web_prototype` и `labeler`:
+
+```text
+DXA-Studio/                 <- корень проекта
+  README.md
+  dxa_project/
+  user_web_prototype/
+  labeler/
+```
+
+Каталог, в котором видны только `augmentation`, `geometry_ml`, `service` и `tests`, — это уже вложенный пакет `dxa_project`, а не корень проекта. Папки `dxa_project/outputs` сразу после клонирования нет: веса намеренно не хранятся в Git и появляются после распаковки отдельного архива модели.
+
 GPU необязателен. Для принудительного CPU-режима скопируйте пример настроек:
 
 ```powershell
@@ -119,7 +131,14 @@ Copy-Item user_web_prototype\.env.example user_web_prototype\.env
 
 и установите в `.env` `DXA_DEVICE=cpu`. Значение `auto` использует CUDA при её наличии и иначе переключается на CPU.
 
-Распакуйте архив модели в корень проекта с сохранением структуры:
+Распакуйте архив модели именно в корень проекта с сохранением путей из архива. Например, если репозиторий находится в `D:\DXA-Studio`, команды выглядят так:
+
+```powershell
+Set-Location "D:\DXA-Studio"
+Expand-Archive -LiteralPath "D:\Downloads\backend_models_20260929.zip" -DestinationPath . -Force
+```
+
+Замените пути в примере на свои. После распаковки должна получиться структура:
 
 ```text
 dxa_project/outputs/final_20260929/
@@ -139,6 +158,16 @@ dxa_project/outputs/final_20260929/
     protocol.json
     evaluation/calibration.json
 ```
+
+Быстрая проверка из корня проекта:
+
+```powershell
+Test-Path .\README.md
+Test-Path .\user_web_prototype
+Test-Path .\dxa_project\outputs\final_20260929\bundle\router.pt
+```
+
+Все три команды должны вернуть `True`. Если первые две возвращают `False`, открыт не корень полного репозитория. Если только третья возвращает `False`, архив модели не распакован либо распакован не в тот каталог.
 
 ### 2. Запуск
 

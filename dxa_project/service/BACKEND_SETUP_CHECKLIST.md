@@ -4,7 +4,9 @@
 
 ## Predict
 
-Распаковать `backend_models_20260929.zip` в корень клонированного проекта. Сохранить структуру:
+Сначала определить корень клонированного проекта. В нём должны находиться `README.md`, каталог `dxa_project` и каталог `user_web_prototype`. Папка, в которой непосредственно лежат `augmentation`, `geometry_ml`, `service` и `tests`, — это уже `dxa_project`, то есть на один уровень ниже корня.
+
+`dxa_project/outputs` отсутствует в чистом Git-репозитории намеренно: веса поставляются отдельно. Распаковать `backend_models_20260929.zip` в корень проекта, а не внутрь `dxa_project`, и сохранить пути из архива:
 
 ```text
 dxa_project/outputs/final_20260929/
@@ -24,6 +26,16 @@ dxa_project/outputs/final_20260929/
     protocol.json
     evaluation/calibration.json
 ```
+
+Проверить из корня проекта:
+
+```powershell
+Test-Path .\README.md
+Test-Path .\user_web_prototype
+Test-Path .\dxa_project\outputs\final_20260929\bundle\router.pt
+```
+
+Все три результата должны быть `True`. Если первые два пути не найдены, это не корень полного репозитория. Если не найден только `router.pt`, архив модели распакован не в тот каталог или ещё не распакован.
 
 Из корня проекта, после установки зависимостей по API_GUIDE.md:
 
