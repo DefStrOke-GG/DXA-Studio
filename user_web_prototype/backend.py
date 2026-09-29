@@ -862,7 +862,16 @@ def start_training():
     }
     if model_rows:
         payload["model"] = {"images": [prediction_sample(row) for row in model_rows]}
-    result = api_json("POST", "/v1/model/partial_fit", expected=(202,), json=payload)
+    try:
+        result = api_json("POST", "/v1/model/partial_fit", expected=(202,), json=payload)
+    except HTTPException as exc:
+        if "partial_fit requires original training/validation data" in str(exc.detail):
+            raise HTTPException(
+                503,
+                "Дообучение недоступно: распакуйте backend_training_reference_20260929.zip "
+                "в корень проекта и перезапустите API.",
+            ) from exc
+        raise
     job_id = result["job_id"]
     with connection() as db:
         db.execute(
