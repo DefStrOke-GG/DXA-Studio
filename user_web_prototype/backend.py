@@ -764,35 +764,59 @@ def training_queue():
     return {"human": counts.get("human", 0), "model": counts.get("model", 0)}
 
 
-@app.get("/api/assets/{asset_id}/annotation/export")
-def export_annotation(asset_id: str, format: str = "csv"):
-    asset = get_asset(asset_id)
+def table_export(rows: list[dict], format: str, base_name: str):
     if format not in ("csv", "xlsx"):
         raise HTTPException(400, "Поддерживаются только CSV и XLSX")
-    if not asset.get("table_json"):
+    if not rows:
         raise HTTPException(409, "Таблица предсказания ещё не готова")
-    row = json.loads(asset["table_json"])
-    ordered = {column: row.get(column, "") for column in TABLE_COLUMNS}
-    base = Path(asset["name"]).stem or "prediction"
+    ordered = [{column: row.get(column, "") for column in TABLE_COLUMNS} for row in rows]
     if format == "csv":
         stream = io.StringIO(newline="")
         stream.write("\ufeff")
         writer = csv.DictWriter(stream, fieldnames=TABLE_COLUMNS)
-        writer.writeheader(); writer.writerow(ordered)
+        writer.writeheader(); writer.writerows(ordered)
         body = io.BytesIO(stream.getvalue().encode("utf-8"))
         media_type = "text/csv; charset=utf-8"
     else:
         from openpyxl import Workbook
         workbook = Workbook(); sheet = workbook.active; sheet.title = "Результат"
-        sheet.append(TABLE_COLUMNS); sheet.append([ordered[column] for column in TABLE_COLUMNS])
+        sheet.append(TABLE_COLUMNS)
+        for row in ordered:
+            sheet.append([row[column] for column in TABLE_COLUMNS])
         sheet.freeze_panes = "A2"; sheet.auto_filter.ref = sheet.dimensions
         for cells in sheet.columns:
             sheet.column_dimensions[cells[0].column_letter].width = min(48, max(12, max(len(str(cell.value or "")) for cell in cells) + 2))
         body = io.BytesIO(); workbook.save(body); body.seek(0)
         media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    ascii_name = "".join(c if c.isascii() and (c.isalnum() or c in "._-") else "_" for c in base)
+    ascii_name = "".join(c if c.isascii() and (c.isalnum() or c in "._-") else "_" for c in base_name)
     return StreamingResponse(body, media_type=media_type,
                              headers={"Content-Disposition": f'attachment; filename="{ascii_name or "prediction"}.{format}"'})
+
+
+@app.get("/api/assets/{asset_id}/annotation/export")
+def export_annotation(asset_id: str, format: str = "csv"):
+    asset = get_asset(asset_id)
+    if not asset.get("table_json"):
+        raise HTTPException(409, "Таблица предсказания ещё не готова")
+    return table_export([json.loads(asset["table_json"])], format, Path(asset["name"]).stem or "prediction")
+
+
+@app.get("/api/sessions/{session_id}/annotation/export")
+def export_session_annotation(session_id: str, format: str = "csv"):
+    with connection() as db:
+        session = db.execute("SELECT 1 FROM sessions WHERE id=?", (session_id,)).fetchone()
+        if not session:
+            raise HTTPException(404, "Исследование не найдено")
+        assets = db.execute(
+            "SELECT name,table_json FROM assets WHERE session_id=? ORDER BY created_at,id", (session_id,)
+        ).fetchall()
+    rows = []
+    for asset in assets:
+        row = json.loads(asset["table_json"]) if asset["table_json"] else {
+            "path_to_study": asset["name"], "processing_status": "Pending"
+        }
+        rows.append(row)
+    return table_export(rows, format, f"dxa_results_{session_id[:8]}")
 
 
 def prediction_sample(asset: dict):
