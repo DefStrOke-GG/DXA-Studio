@@ -1,0 +1,8 @@
+services:
+  dxa-api:
+    build:
+      args:
+        TORCH_VARIANT: cu130
+    environment:
+      DXA_DEVICE: cuda
+    gpus: all

@@ -19,7 +19,7 @@ CPU: заменить `cuda` на `cpu`; автоматический выбор
 
 Разрешённые локальные пути: проект, хранилище сервиса и `DXA_ALLOWED_ROOTS` (несколько корней через `;`). Для удалённого клиента использовать upload, а не передавать путь с его компьютера. Сервис запускается как локальный вычислительный компонент; внешний backend обращается к нему через свой сервер.
 
-На другой машине создать Python 3.13 environment, установить совместимые torch/torchvision для CPU/CUDA, затем зависимости из `requirements-geometry.txt` и `service/requirements.txt`. Здесь проверены torch 2.12.1+cu130 и torchvision 0.27.1+cu130. Особенность текущей машины: pydicom берётся из `analysis_20260929/runtime`, поэтому здесь этот каталог включён в PYTHONPATH; в чистом окружении установленный pydicom этого не требует. Для сервисных логов используется UTF-8. Worker-логи: `<data-dir>/logs/worker_gpu.log` и `worker_cpu.log`.
+На другой машине создать Python 3.13 environment, установить совместимые torch/torchvision для CPU/CUDA, затем зависимости из `requirements-geometry.txt` и `service/requirements.txt`. Здесь проверены torch 2.12.1 и torchvision 0.27.1; для GPU используется официальный индекс cu130. Compose по умолчанию собирает CPU-образ. GPU-вариант запускается из `user_web_prototype` командой `docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build`. Особенность текущей машины: pydicom берётся из `analysis_20260929/runtime`, поэтому здесь этот каталог включён в PYTHONPATH; в чистом окружении установленный pydicom этого не требует. Для сервисных логов используется UTF-8. Worker-логи: `<data-dir>/logs/worker_gpu.log` и `worker_cpu.log`.
 
 ## predict
 

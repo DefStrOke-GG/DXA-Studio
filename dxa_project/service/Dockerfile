@@ -1,5 +1,9 @@
 FROM python:3.13-slim
 
+ARG TORCH_VARIANT=cpu
+ARG TORCH_VERSION=2.12.1
+ARG TORCHVISION_VERSION=0.27.1
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
@@ -14,8 +18,9 @@ COPY requirements-geometry.txt /tmp/requirements-geometry.txt
 COPY service/requirements.txt /tmp/requirements-service.txt
 
 RUN python -m pip install --upgrade pip \
-    && python -m pip install --index-url https://download.pytorch.org/whl/cu130 \
-       torch==2.12.1+cu130 torchvision==0.27.1+cu130 \
+    && case "$TORCH_VARIANT" in cpu|cu130) ;; *) echo "Unsupported TORCH_VARIANT=$TORCH_VARIANT (expected cpu or cu130)" >&2; exit 2 ;; esac \
+    && python -m pip install --index-url "https://download.pytorch.org/whl/${TORCH_VARIANT}" \
+       "torch==${TORCH_VERSION}" "torchvision==${TORCHVISION_VERSION}" \
     && python -m pip install -r /tmp/requirements-geometry.txt -r /tmp/requirements-service.txt
 
 EXPOSE 8765

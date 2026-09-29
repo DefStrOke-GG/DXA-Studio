@@ -1,5 +1,6 @@
-# Install compatible torch and torchvision for your CPU/CUDA separately.
-# Tested here: torch 2.12.1+cu130, torchvision 0.27.1+cu130.
+# Docker installs torch/torchvision separately: CPU by default, cu130 through
+# user_web_prototype/docker-compose.gpu.yml. For a local environment install
+# the matching official wheels before this file.
 pydicom==3.0.2
 numpy==2.3.5
 scipy==1.18.0

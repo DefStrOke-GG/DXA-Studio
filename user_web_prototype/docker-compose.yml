@@ -3,15 +3,17 @@ services:
     build:
       context: ../dxa_project
       dockerfile: service/Dockerfile
+      args:
+        TORCH_VARIANT: "${DXA_TORCH_VARIANT:-cpu}"
     container_name: dxa_model_api
     ports:
-      - "${DXA_API_PORT:-8765}:8765"
+      - "127.0.0.1:${DXA_API_PORT:-8765}:8765"
     environment:
       DXA_ALLOWED_ROOTS: "/workspace;/data"
-      DXA_DEVICE: "${DXA_DEVICE:-auto}"
+      DXA_DEVICE: "${DXA_DEVICE:-cpu}"
     volumes:
       - ..:/workspace:ro
-      - ../dxa_project/service_data:/data
+      - dxa_service_data:/data
     healthcheck:
       test: ["CMD", "python", "-c", "import json,urllib.request; assert json.load(urllib.request.urlopen('http://127.0.0.1:8765/v1/health'))['status']=='ready'"]
       interval: 15s
@@ -24,14 +26,18 @@ services:
     build: .
     container_name: dxa_user_web_prototype
     ports:
-      - "${DXA_USER_WEB_PORT:-8503}:8503"
+      - "127.0.0.1:${DXA_USER_WEB_PORT:-8503}:8503"
     environment:
       USER_WEB_DATA: /data
       DXA_API_URL: http://dxa-api:8765
     volumes:
-      - ./prototype_data:/data
+      - dxa_user_web_data:/data
       - ../dxa_project:/workspace/dxa_project:ro
     depends_on:
       dxa-api:
         condition: service_healthy
     restart: unless-stopped
+
+volumes:
+  dxa_service_data:
+  dxa_user_web_data:
