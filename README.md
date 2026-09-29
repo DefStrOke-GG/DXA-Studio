@@ -109,7 +109,7 @@ flowchart LR
 ### 1. Что потребуется
 
 - Docker Desktop с Linux containers;
-- архив модели `backend_models_20260929.zip`.
+- архив модели [`backend_models_20260929.zip`](https://disk.yandex.ru/d/AZB1d6uFFrQLmQ) — на странице Яндекс Диска выберите файл с этим названием.
 
 Сначала клонируйте **весь** репозиторий. Корень проекта — каталог, в котором одновременно находятся `README.md`, `dxa_project`, `user_web_prototype` и `labeler`:
 
